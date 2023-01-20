@@ -39,5 +39,5 @@ def get_corpus(seed:int, n:int, train:bool, batch_size:int, window_size:int, tok
         tokens = tokens[:window_size]
         result.append(tokens)
     
-    return more_itertools.batched(result, batch_size)
+    return list(more_itertools.batched(result, batch_size))
 

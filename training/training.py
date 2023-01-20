@@ -13,7 +13,7 @@ seed = 999
 tokenizer_name = 'gpt2'
 
 num_epochs = 20
-n_corpus = 1000
+n_corpus = 10000
 
 device = 'cuda'
 
@@ -40,9 +40,13 @@ d_vocab = model.cfg.d_vocab
 optimizer = torch.optim.Adam(model.parameters())
 loss_fn = torch.nn.CrossEntropyLoss()
 
+train_corpus = get_corpus(seed, n_corpus, train=True, batch_size=64, window_size=n_ctx+1, tokenizer=model.tokenizer)
+test_corpus = get_corpus(seed, n_corpus, train=False, batch_size=64, window_size=n_ctx+1, tokenizer=model.tokenizer)
+
 for epoch in tqdm.tqdm(range(num_epochs)):
     loss_sum = torch.zeros(()).to(device)
-    for sentences in get_corpus(seed, n_corpus, train=True, batch_size=64, window_size=n_ctx+1, tokenizer=model.tokenizer):
+    n_batches = 0
+    for sentences in train_corpus:
         stensor = torch.tensor(sentences).to(device)
         num_things = stensor.shape[0] * n_ctx
         nexts = stensor[:,1:].reshape(num_things)
@@ -52,8 +56,24 @@ for epoch in tqdm.tqdm(range(num_epochs)):
         loss = loss_fn(logits, nexts)
         loss.backward()
         loss_sum += loss.detach()
+        n_batches += 1
         
         optimizer.step()
         optimizer.zero_grad()
-    print(f'Epoch {epoch}: train loss = {loss_sum.item()}')
+    print(f'Epoch {epoch}: train loss = {loss_sum.item() / n_batches}')
+
+    loss_sum = torch.zeros(()).to(device)
+    n_batches = 0
+    with torch.inference_mode():
+        for sentences in test_corpus:
+            stensor = torch.tensor(sentences).to(device)
+            num_things = stensor.shape[0] * n_ctx
+            nexts = stensor[:,1:].reshape(num_things)
+            inputs = stensor[:,:-1]
+            
+            logits = model(inputs).reshape(num_things, d_vocab)
+            loss_sum += loss_fn(logits, nexts)
+            n_batches += 1
+    print(f'         test loss = {loss_sum.item() / n_batches}')
+            
 
