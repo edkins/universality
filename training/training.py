@@ -6,8 +6,8 @@ import random
 
 from corpus import get_corpus
 
-n_layers = 3
-n_heads = 4
+n_layers = 1
+n_heads = 2
 n_ctx = 16  # The maximum sequence length
 seed = 999
 filename = 'model.pickle'
@@ -26,9 +26,9 @@ device = 'cuda'
 cfg = HookedTransformerConfig(
     n_layers = n_layers,
     n_heads = n_heads,
-    d_model = 128,
-    d_head = 32,
-    d_mlp = 512,
+    d_model = 16,
+    d_head = 4,
+    d_mlp = 32,
     act_fn = "relu",
     normalization_type=None,
     tokenizer_name=tokenizer_name,
