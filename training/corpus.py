@@ -33,7 +33,7 @@ def get_corpus(seed:int, n:int, train:bool, batch_size:int, window_size:int, tok
         tokens = []
         i = 0
         while len(tokens) < window_size:
-            sentence = word_join(s[r + i % len(s)])
+            sentence = word_join(s[(r + i) % len(s)])
             tokens += tokenizer.encode(sentence)
             i += 1
         tokens = tokens[:window_size]

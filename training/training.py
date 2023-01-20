@@ -6,18 +6,18 @@ import random
 
 from corpus import get_corpus
 
-n_layers = 1
-n_heads = 2
-n_ctx = 16  # The maximum sequence length
+n_layers = 8
+n_heads = 4
+n_ctx = 16 # The maximum sequence length
 seed = 999
 filename = 'model.pickle'
 
 #https://huggingface.co/transformers/v3.0.2/model_doc/auto.html#autotokenizer
 tokenizer_name = 'gpt2'
 
-num_epochs = 20
-n_train = 20000
-n_test = 10000
+num_epochs = 50
+n_train = 30000
+n_test = 1000
 
 device = 'cuda'
 
