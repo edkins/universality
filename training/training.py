@@ -1,6 +1,7 @@
 from transformer_lens import HookedTransformer, HookedTransformerConfig
 import tqdm
 import torch
+import pickle
 
 from corpus import get_corpus
 
@@ -8,6 +9,7 @@ n_layers = 3
 n_heads = 4
 n_ctx = 16  # The maximum sequence length
 seed = 999
+filename = 'model.pickle'
 
 #https://huggingface.co/transformers/v3.0.2/model_doc/auto.html#autotokenizer
 tokenizer_name = 'gpt2'
@@ -37,7 +39,7 @@ cfg = HookedTransformerConfig(
 model = HookedTransformer(cfg)
 d_vocab = model.cfg.d_vocab
 
-optimizer = torch.optim.Adam(model.parameters())
+optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1, betas=(0.9, 0.98))
 loss_fn = torch.nn.CrossEntropyLoss()
 
 train_corpus = get_corpus(seed, n_corpus, train=True, batch_size=64, window_size=n_ctx+1, tokenizer=model.tokenizer)
@@ -61,6 +63,9 @@ for epoch in tqdm.tqdm(range(num_epochs)):
         optimizer.step()
         optimizer.zero_grad()
     print(f'Epoch {epoch}: train loss = {loss_sum.item() / n_batches}')
+    
+    with open(filename, 'wb') as f:
+        pickle.dump((cfg, model.state_dict()), f)
 
     loss_sum = torch.zeros(()).to(device)
     n_batches = 0
