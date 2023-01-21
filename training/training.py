@@ -6,16 +6,28 @@ import random
 
 from corpus import get_corpus
 
+from optparse import OptionParser
+
+
+parser = OptionParser()
+parser.add_option("-f", "--file", dest="filename",default='model',
+                  help="write model to FILE", metavar="FILE")
+parser.add_option("-e", "--epochs",
+                  action="store", type='int',dest="epochs", default=50,
+                  help="number of epochs")
+
+(options, args) = parser.parse_args()
+
 n_layers = 4
 n_heads = 4
 n_ctx = 16 # The maximum sequence length
 seed = 999
-filename = 'model.pickle'
+filename = options.filename + str(options.epochs) + '.pickle'
 
 #https://huggingface.co/transformers/v3.0.2/model_doc/auto.html#autotokenizer
 tokenizer_name = 'gpt2'
 
-num_epochs = 50
+num_epochs = options.epochs
 n_train = 30000
 n_test = 1000
 
