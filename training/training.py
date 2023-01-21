@@ -15,14 +15,17 @@ parser.add_option("-f", "--file", dest="filename",default='model',
 parser.add_option("-e", "--epochs",
                   action="store", type='int',dest="epochs", default=50,
                   help="number of epochs")
+parser.add_option("-s", "--seed",
+                  action="store", type='int',dest="seed", default=999,
+                  help="random seed value")
 
 (options, args) = parser.parse_args()
 
 n_layers = 1
 n_heads = 8
 n_ctx = 16 # The maximum sequence length
-seed = 999
-filename = options.filename + str(options.epochs) + '.pickle'
+seed = options.seed
+filename = options.filename + str(options.epochs) + '-' + str(seed) + '.pickle'
 
 #https://huggingface.co/transformers/v3.0.2/model_doc/auto.html#autotokenizer
 tokenizer_name = 'gpt2'
