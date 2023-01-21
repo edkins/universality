@@ -20,7 +20,7 @@ with torch.inference_mode():
     inputs = torch.tensor([tokens])
     _, cache = model.run_with_cache(inputs)
 
-    fix, ax = plt.subplots(cfg.n_layers, cfg.n_heads)
+    fix, ax = plt.subplots(cfg.n_layers, cfg.n_heads, squeeze=False)
     for layer in range(cfg.n_layers):
         for head in range(cfg.n_heads):
             attn = cache['pattern', layer, 'attn'][0, head, : :]
