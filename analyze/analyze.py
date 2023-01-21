@@ -1,20 +1,20 @@
 from transformer_lens import HookedTransformer
 import sys
-import pickle
 import torch
 from matplotlib import pyplot as plt
 
 from corpus import get_corpus
+from unp import restricted_unpickle
 
 seed = 9992
-n_analyze = 2
+n_analyze = 100
 
 filename0 = sys.argv[1]
 filename1 = sys.argv[2]
 with open(filename0, 'rb') as f:
-    cfg0, state0 = pickle.load(f)
+    cfg0, state0 = restricted_unpickle(f)
 with open(filename1, 'rb') as f:
-    cfg1, state1 = pickle.load(f)
+    cfg1, state1 = restricted_unpickle(f)
 
 model0 = HookedTransformer(cfg0)
 model0.load_state_dict(state0)
