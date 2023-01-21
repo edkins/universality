@@ -7,7 +7,7 @@ from corpus import get_corpus
 from unp import restricted_unpickle
 
 seed = 9992
-n_analyze = 100
+n_analyze = 10000
 
 filename0 = sys.argv[1]
 filename1 = sys.argv[2]
