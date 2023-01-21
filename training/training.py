@@ -18,8 +18,8 @@ parser.add_option("-e", "--epochs",
 
 (options, args) = parser.parse_args()
 
-n_layers = 4
-n_heads = 4
+n_layers = 2
+n_heads = 2
 n_ctx = 16 # The maximum sequence length
 seed = 999
 filename = options.filename + str(options.epochs) + '.pickle'
@@ -38,9 +38,9 @@ device = 'cuda'
 cfg = HookedTransformerConfig(
     n_layers = n_layers,
     n_heads = n_heads,
-    d_model = 32,
-    d_head = 8,
-    d_mlp = 32,
+    d_model = 64,
+    d_head = 32,
+    d_mlp = 128,
     act_fn = "relu",
     normalization_type=None,
     tokenizer_name=tokenizer_name,
