@@ -6,7 +6,7 @@ import random
 
 from corpus import get_corpus
 
-n_layers = 8
+n_layers = 4
 n_heads = 4
 n_ctx = 16 # The maximum sequence length
 seed = 999
