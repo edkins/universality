@@ -10,10 +10,10 @@ seed = 9992
 n_analyze = 2
 
 filename0 = sys.argv[1]
-filename1 = sys.argv[1]
+filename1 = sys.argv[2]
 with open(filename0, 'rb') as f:
     cfg0, state0 = pickle.load(f)
-with open(filename0, 'rb') as f:
+with open(filename1, 'rb') as f:
     cfg1, state1 = pickle.load(f)
 
 model0 = HookedTransformer(cfg0)
@@ -32,7 +32,7 @@ with torch.inference_mode():
         inputs = torch.tensor(sentences).to(device)
         num_things = inputs.shape[0] * n_ctx
         _, cache0 = model0.run_with_cache(inputs)
-        _, cache1 = model0.run_with_cache(inputs)
+        _, cache1 = model1.run_with_cache(inputs)
 
         for layer0 in range(cfg0.n_layers):
             for layer1 in range(cfg0.n_layers):
@@ -46,6 +46,6 @@ with torch.inference_mode():
                         y = layer1 * cfg1.n_heads + head1
                         distances[x,y] += distance_sq
 
-plt.imshow(distances.cpu())
+plt.imshow(torch.sqrt(distances).cpu())
 plt.show()
 

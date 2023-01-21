@@ -5,8 +5,6 @@ import readline
 import torch
 import random
 
-temperature = 0.5
-
 def complete(model, prompt, temperature):
     tokens = model.tokenizer.encode(prompt)
     
@@ -22,6 +20,11 @@ def complete(model, prompt, temperature):
 filename = sys.argv[1]
 with open(filename, 'rb') as f:
     cfg, state = pickle.load(f)
+
+if len(sys.argv) >= 3:
+    temperature = float(sys.argv[2])
+else:
+    temperature = 0.5
 
 model = HookedTransformer(cfg)
 model.load_state_dict(state)
