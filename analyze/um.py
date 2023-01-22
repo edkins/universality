@@ -14,7 +14,7 @@ from unp import restricted_unpickle
 our_seed = 9992
 n_analyze = 1024
 seed_min = 990
-seed_max = 1000
+seed_max = 999
 filename_prefix = 'model15-4-'
 batch_size = 64
 
