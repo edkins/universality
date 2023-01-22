@@ -58,7 +58,7 @@ with torch.inference_mode():
                 value = seed / n_seeds
 
     transform = PCA(n_components)
-    xy = transform.fit_transform(attn)
+    projected = transform.fit_transform(attn)
 
     for datapoint in range(n_analyze_show):
         print(datapoint, prompts[datapoint])
@@ -86,7 +86,7 @@ with torch.inference_mode():
                     colors[x,y,2] = 0.8764
         ax[datapoint // n_columns][datapoint % n_columns].imshow(colors)
         for word_index in range(n_ctx):
-            ax[datapoint // n_columns][datapoint % n_columns].text(n_ctx, word_index, prompts[datapoint][word_index], fontsize='xx-small')
+            ax[datapoint // n_columns][datapoint % n_columns].text(n_ctx, word_index, prompts[datapoint][word_index], fontsize='xx-small', color=colors[word_index,0,:].numpy())
 
     plt.show()
 
