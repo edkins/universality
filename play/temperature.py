@@ -14,7 +14,7 @@ def complete(model, prompt, temperature):
         probs = torch.nn.functional.softmax(logits / temperature, dim=0)
         d_vocab = probs.shape[0]
 
-        next_token = random.choices(range(d_vocab), weights=probs)[0]
+        next_token = list(torch.utils.data.WeightedRandomSampler(probs, 1, replacement=True))[0]
         tokens.append(next_token)
     return model.tokenizer.decode(tokens)
 
