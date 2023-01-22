@@ -43,7 +43,7 @@ with torch.inference_mode():
     for component in range(n_components):
         for datapoint in range(n_analyze_show):
             grid = transform.components_[component].reshape((n_analyze,n_ctx,n_ctx))[datapoint,:,:]
-            ax[component][datapoint].imshow(grid, cmap='coolwarm')
+            ax[component][datapoint].imshow(grid, cmap='coolwarm', vmin=-10/n_analyze, vmax=10/n_analyze)
 
     plt.show()
 
