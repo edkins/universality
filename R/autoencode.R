@@ -232,18 +232,13 @@ dir.f <- function(f,file.arg='filename'){
 	}
 }
 
-arrange.stats <- function(plots,filename,ncols=3,...){
+arrange.stats <- function(plots,filename,ncols=3,labels=NULL,...){
 	require(ggpubr)
 
 	nrows <- ceiling(length(plots)/ncols)
-	dat <- lapply(plots,'[[','data')
-	rho <- sapply(dat,function(x) cor(x[,1],x[,2],method='spearman'))
-
-	title <- paste('Spearman correlation =',
-		       as.character(rho))
 
 	plots <- ggarrange(plotlist=plots,
-			   #      labels=names(plots),
+			   labels=labels,
 			   ncol=ncols,nrow=nrows)
 
 	dir.f(ggexport)(plots,

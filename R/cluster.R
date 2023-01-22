@@ -28,6 +28,7 @@ colnames(heads) <- mapply(paste,'token',
 
 groups <- read.csv("groups.csv")
 zeros <- apply(heads,2,purrr::compose(all,partial(`==`,0)))
+pairid <- colnames(heads)[!zeros]
 
 corHeatmap(heads[,!zeros])
 
@@ -42,6 +43,34 @@ dir.tab(aic,'aic')
 model <- models[[which.min(aic[,'aic'])]]$model
 encoded <- models[[which.min(aic[,'aic'])]]$encoded
 
+pair.pert <- sapply(1:ncol(heads),
+		    function(i){
+			    tmp <- heads
+			    tmp[,i] <- runif(nrow(heads),
+					       0,1)
+			    return(evaluate(model,tmp,heads))
+		    })
+names(pair.pert) <- colnames(heads)
+
+dir.tab(cbind(colnames(heads),pair.pert),
+	'pair.perturbation.err', 
+	quote=F,col.names=F,row.names=F)
+
+first.token <- sub('_[0-9]+$','',colnames(heads))
+token.pert <- sapply(unique(first.token),
+	    function(x){
+		    tmp <- heads
+		    sel <- first.token==x
+		    tmp[,sel] <- runif(nrow(heads)*sum(sel), 
+				       0,1)
+		    return(evaluate(model,tmp,heads))
+	    })
+
+dir.tab(cbind(first.token,token.pert),
+	'token.perturbation.err', 
+	quote=F,col.names=F,row.names=F)
+
+
 outmodel <- keras_model(
 	inputs=get_layer(
 		model, 
@@ -50,7 +79,6 @@ outmodel <- keras_model(
 		model, 
 		index=length(model$layers))$output)
 
-predict(outmodel,diag(1,2,2))
 embedding <- do.call(rbind,
 		     lapply(runif(100,-1,1),
 			    cbind,
@@ -72,8 +100,15 @@ plots <- lapply(names(dat)[-1:-2],
 		scale_color_viridis_c()+geom_point())
 
 arrange.stats(plots,'embeddings.all',height=128,width=16)
-arrange.stats(plots[!zeros],'embeddings.nonzero',height=128,width=16)
-arrange.stats(plots[1:12],'embeddings',height=12,width=16)
+
+pair.mse <- pair.pert[!zeros]
+plots <- plots[!zeros]
+lab <- paste('MSE =',as.character(pair.mse))
+
+sel <- order(pair.mse,decreasing=T)
+
+arrange.stats(plots[sel],'embeddings.nonzero',height=128,width=16,labels=lab[sel])
+arrange.stats(plots[sel[1:12]],'embeddings',height=12,width=16,labels=lab[sel[1:12]])
 
 encode.head <- do.call(rbind,split(encoded,
 		     apply(groups[,-1],1,
@@ -122,11 +157,11 @@ spl <- paste0(as.character(groups[,2]),'-',
 	     as.character(groups[,3]))
 
 dir.pdf('modelhm')
-Heatmap(heads,show_row_names=F,show_column_names=F,
+Heatmap(heads[,!zeros],show_row_names=F,show_column_names=F,
 	split=spl)
 dev.off()
 
 dir.pdf('clusthm')
-Heatmap(heads,show_row_names=F,show_column_names=F,
+Heatmap(heads[,!zeros],show_row_names=F,show_column_names=F,
 	split=rep(clusts,nrow(heads)/length(clusts)))
 dev.off()
