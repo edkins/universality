@@ -3,7 +3,7 @@ import torch
 from matplotlib import pyplot as plt
 import matplotlib
 from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, SparsePCA, MiniBatchSparsePCA
 import umap
 import math
 import csv
@@ -18,7 +18,8 @@ n_heads = 8
 n_ctx = 16
 n_analyze = 1024
 
-n_components = 5
+n_components = 72
+n_components_show = 8
 n_analyze_show = 8
 
 show_punc = False
@@ -54,16 +55,18 @@ with torch.inference_mode():
                 i = head + n_heads * (layer + n_layers * seed)
                 value = seed / n_seeds
 
-    transform = PCA(n_components)
-    xy = transform.fit_transform(attn)
+    print("Doing transform")
+    transform = MiniBatchSparsePCA(n_components, verbose=True, alpha=1)
+    projected = transform.fit_transform(attn)
+
+    plt.imshow(projected, cmap='coolwarm', vmin=-20, vmax=20)
 
     for datapoint in range(n_analyze_show):
         print(datapoint, prompts[datapoint])
 
-    fig, ax = plt.subplots(n_components, n_analyze_show, squeeze=False)
+    fig, ax = plt.subplots(n_components_show, n_analyze_show, squeeze=False)
     cmap = matplotlib.colormaps['coolwarm']
-    for component in range(n_components):
-        print(f"Component {component}: explained variance ratio = {transform.explained_variance_ratio_[component]}")
+    for component in range(n_components_show):
         for datapoint in range(n_analyze_show):
             grid = transform.components_[component].reshape((n_analyze,n_ctx,n_ctx))[datapoint,:,:]
             colors = torch.zeros((n_ctx, n_ctx, 3))

@@ -3,7 +3,7 @@ import torch
 from matplotlib import pyplot as plt
 import matplotlib
 from sklearn.manifold import TSNE
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, NMF
 import umap
 import math
 import csv
@@ -54,7 +54,7 @@ with torch.inference_mode():
                 i = head + n_heads * (layer + n_layers * seed)
                 value = seed / n_seeds
 
-    transform = PCA(n_components)
+    transform = NMF(n_components)
     xy = transform.fit_transform(attn)
 
     for datapoint in range(n_analyze_show):
@@ -63,14 +63,13 @@ with torch.inference_mode():
     fig, ax = plt.subplots(n_components, n_analyze_show, squeeze=False)
     cmap = matplotlib.colormaps['coolwarm']
     for component in range(n_components):
-        print(f"Component {component}: explained variance ratio = {transform.explained_variance_ratio_[component]}")
         for datapoint in range(n_analyze_show):
             grid = transform.components_[component].reshape((n_analyze,n_ctx,n_ctx))[datapoint,:,:]
             colors = torch.zeros((n_ctx, n_ctx, 3))
             for x in range(n_ctx):
                 for y in range(n_ctx):   # oops: x and y are the wrong way around
                     if x >= y:
-                        colors[x,y,:] = torch.tensor(cmap(0.5 + grid[x,y] * n_analyze / 20)[:3])
+                        colors[x,y,:] = torch.tensor(cmap(0.5 + grid[x,y] / 2)[:3])
                     elif show_punc and is_partial(prompts[datapoint][y]):
                         colors[x,y,0] = 0.8764
                         colors[x,y,1] = 1

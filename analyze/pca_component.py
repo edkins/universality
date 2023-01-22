@@ -9,6 +9,8 @@ import math
 import csv
 import re
 
+component = int(sys.argv[1])
+
 filename = 'data.csv'
 prompt_filename = 'corpus-snippets.csv'
 
@@ -20,6 +22,7 @@ n_analyze = 1024
 
 n_components = 5
 n_analyze_show = 8
+n_columns = 2
 
 show_punc = False
 
@@ -55,35 +58,35 @@ with torch.inference_mode():
                 value = seed / n_seeds
 
     transform = PCA(n_components)
-    xy = transform.fit_transform(attn)
+    projected = transform.fit_transform(attn)
 
     for datapoint in range(n_analyze_show):
         print(datapoint, prompts[datapoint])
 
-    fig, ax = plt.subplots(n_components, n_analyze_show, squeeze=False)
+    fig, ax = plt.subplots(n_analyze_show // n_columns, n_columns, squeeze=False)
     cmap = matplotlib.colormaps['coolwarm']
-    for component in range(n_components):
-        print(f"Component {component}: explained variance ratio = {transform.explained_variance_ratio_[component]}")
-        for datapoint in range(n_analyze_show):
-            grid = transform.components_[component].reshape((n_analyze,n_ctx,n_ctx))[datapoint,:,:]
-            colors = torch.zeros((n_ctx, n_ctx, 3))
-            for x in range(n_ctx):
-                for y in range(n_ctx):   # oops: x and y are the wrong way around
-                    if x >= y:
-                        colors[x,y,:] = torch.tensor(cmap(0.5 + grid[x,y] * n_analyze / 20)[:3])
-                    elif show_punc and is_partial(prompts[datapoint][y]):
-                        colors[x,y,0] = 0.8764
-                        colors[x,y,1] = 1
-                        colors[x,y,2] = 0.8764
-                    elif show_punc and is_punc(prompts[datapoint][y]):
-                        colors[x,y,0] = 0.8764
-                        colors[x,y,1] = 1
-                        colors[x,y,2] = 1
-                    else:
-                        colors[x,y,0] = 0.8764
-                        colors[x,y,1] = 0.8764
-                        colors[x,y,2] = 0.8764
-            ax[component][datapoint].imshow(colors)
+    for datapoint in range(n_analyze_show):
+        grid = transform.components_[component].reshape((n_analyze,n_ctx,n_ctx))[datapoint,:,:]
+        colors = torch.zeros((n_ctx, n_ctx, 3))
+        for x in range(n_ctx):
+            for y in range(n_ctx):   # oops: x and y are the wrong way around
+                if x >= y:
+                    colors[x,y,:] = torch.tensor(cmap(0.5 + grid[x,y] * n_analyze / 20)[:3])
+                elif show_punc and is_partial(prompts[datapoint][y]):
+                    colors[x,y,0] = 0.8764
+                    colors[x,y,1] = 1
+                    colors[x,y,2] = 0.8764
+                elif show_punc and is_punc(prompts[datapoint][y]):
+                    colors[x,y,0] = 0.8764
+                    colors[x,y,1] = 1
+                    colors[x,y,2] = 1
+                else:
+                    colors[x,y,0] = 0.8764
+                    colors[x,y,1] = 0.8764
+                    colors[x,y,2] = 0.8764
+        ax[datapoint // n_columns][datapoint % n_columns].imshow(colors)
+        for word_index in range(n_ctx):
+            ax[datapoint // n_columns][datapoint % n_columns].text(n_ctx, word_index, prompts[datapoint][word_index], fontsize='xx-small', color=colors[word_index,0,:].numpy())
 
     plt.show()
 
