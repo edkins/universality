@@ -191,7 +191,7 @@ The second principal component corresponds (roughly) to attendig to the previous
 
 The remaining principal components exhibit different behaviour for each prompt, and warrant further investigation. The third principal component is shown in \ref{fig:pca-component-2}. This shows one sign for the first column (attending to the first token in the sequence) and the opposite sign for the remaining tokens. Furthermore, the sign is positive (red) for common "stop-words" such as "the", "of" and "and" and negative (blue) for more semantically meaningful words.
 
-This effect is explored further in \ref{fig:attention-to-first-token}, where we see how much each token attends to the first token, across all model-heads, but reduced to 2 dimensions with PCA. This shows a clear cluster of capitalized words up the top-right, and stop-words towards the lower-right of the main cluster.
+This effect is explored further in \ref{fig:attending-to-first-token}, where we see how much each token attends to the first token, across all model-heads, but reduced to 2 dimensions with PCA. This shows a clear cluster of capitalized words up the top-right, and stop-words towards the lower-right of the main cluster.
 
 \begin{figure}
     \includegraphics[width=\textwidth]{images/pca-components.png}
@@ -215,9 +215,9 @@ This effect is explored further in \ref{fig:attention-to-first-token}, where we 
 
 For the first prompt that we investigated, and for the first head of the first model, the clearest result came after 6 tokens. The prompt was "They sit alone in their rooms", and \ref{fig:knockout-one-prompt} shows that words such as "are", "were" and "will" are suppressed by the given head. Grammatically, the words should not be there (or are very unlikely), and the model has not fully learned this. However, the given head is in a sense "helping" the others out here.
 
-In \ref{knockout-one-prompt-many-models} we extend this investigation to multiple models and heads - specifically everything in cluster 2. Some of the other models' heads seem to have a similar purpose, suppressing tokens such as "are" and "were". But not all of them.
+In \ref{fig:knockout-one-prompt-many-models} we extend this investigation to multiple models and heads - specifically everything in cluster 2. Some of the other models' heads seem to have a similar purpose, suppressing tokens such as "are" and "were". But not all of them.
 
-Figure \ref{knockout-64prompt} shows how this effect extends across multiple prompts and all clusters. We see the turquoise cluster scattered across the bottom, the green cluster over to the left, and the peach/pink/gold clusters (which were near each other in the original plot) mixed together nearby. This suggests that for some clusters, there is a relatedness that goes beyond just similar attention patterns - they also have similar effects on the output.
+Figure \ref{fig:knockout-64prompt} shows how this effect extends across multiple prompts and all clusters. We see the turquoise cluster scattered across the bottom, the green cluster over to the left, and the peach/pink/gold clusters (which were near each other in the original plot) mixed together nearby. This suggests that for some clusters, there is a relatedness that goes beyond just similar attention patterns - they also have similar effects on the output.
 
 \begin{figure}
 	\includegraphics[width=\textwidth]{images/knockout-one-prompt.png}
