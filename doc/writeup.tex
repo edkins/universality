@@ -191,7 +191,7 @@ The second principal component corresponds (roughly) to attendig to the previous
 
 The remaining principal components exhibit different behaviour for each prompt, and warrant further investigation. The third principal component is shown in \ref{fig:pca-component-2}. This shows one sign for the first column (attending to the first token in the sequence) and the opposite sign for the remaining tokens. Furthermore, the sign is positive (red) for common "stop-words" such as "the", "of" and "and" and negative (blue) for more semantically meaningful words.
 
-This effect is explored further in \ref{fig:attention-to-first-token}, where we see how much each token attends to the first token, across all model-heads, but reduced to 2 dimensions with PCA. This shows a clear cluster of capitalized words up the top-right, and stop-words towards the lower-right of the main cluster.
+This effect is explored further in \ref{fig:attending-to-first-token}, where we see how much each token attends to the first token, across all model-heads, but reduced to 2 dimensions with PCA. This shows a clear cluster of capitalized words up the top-right, and stop-words towards the lower-right of the main cluster.
 
 \begin{figure}
     \includegraphics[width=\textwidth]{images/pca-components.png}
