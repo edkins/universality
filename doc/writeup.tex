@@ -108,9 +108,11 @@ An autoencoder is a method of dimension reduction that uses a neural network to 
 
 We generated embeddings of 64, 32, 16, 8, 4, and 2 dimensions and selected the most informative using Akaike Information Criterion, which is given by $$ AIC = 2k - 2ln(L)$$ where $k$ is number of parameters (embedding layers in this case) and $L$ is a loss function (MSE in this case).
 
+\begin{center}
 \begin{table}
-\begin{tabular}{|c|c|c|c|}
-	bottleneck & nlayer & err & aic \\
+\begin{tabular}{c|c|c|c|c}
+	& bottleneck & nlayer & err & aic \\
+	\hline
 	encode16 & 16 & 8 & 0.001563 & 44.92 \\
 	encode2 & 2 & 14 & 0.003355 & 15.39 \\
 	encode32 & 32 & 6 & 0.000819 & 78.21 \\
@@ -120,6 +122,7 @@ We generated embeddings of 64, 32, 16, 8, 4, and 2 dimensions and selected the m
 \end{tabular}
 \caption{AIC for encodings.}
 \end{table}
+\end{center}
 
 	\subsubsection{Clustering}
 			A 9-nearest neighbors graph is constructed from euclidean distance calculated from the encoding layer.
@@ -157,7 +160,7 @@ We generated embeddings of 64, 32, 16, 8, 4, and 2 dimensions and selected the m
 
 \begin{figure}
 	\includegraphics[width=\textwidth]{figs/encoding.pdf}
-	\caption{Optimal clustering at \gamma = 2.16.}
+	\caption{Optimal clustering at $\gamma = 2.16$.}
 	\label{}
 \end{figure}
 
@@ -249,26 +252,6 @@ By comparing separately trained toy models of with the same architecture, we wer
 
 %%% Comment out this section when you \bibliography{references} is enabled.
 \begin{thebibliography}{1}
-
-\bibitem{kour2014real}
-George Kour and Raid Saabne.
-\newblock Real-time segmentation of on-line handwritten arabic script.
-\newblock In {\em Frontiers in Handwriting Recognition (ICFHR), 2014 14th
-  International Conference on}, pages 417--422. IEEE, 2014.
-
-\bibitem{kour2014fast}
-George Kour and Raid Saabne.
-\newblock Fast classification of handwritten on-line arabic characters.
-\newblock In {\em Soft Computing and Pattern Recognition (SoCPaR), 2014 6th
-  International Conference of}, pages 312--318. IEEE, 2014.
-
-\bibitem{hadash2018estimate}
-Guy Hadash, Einat Kermany, Boaz Carmeli, Ofer Lavi, George Kour, and Alon
-  Jacovi.
-\newblock Estimate and replace: A novel approach to integrating deep neural
-  networks with existing applications.
-\newblock {\em arXiv preprint arXiv:1804.09028}, 2018.
-
 \end{thebibliography}
 
 
