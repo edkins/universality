@@ -1,0 +1,75 @@
+digraph cluster0 {
+	nodesep=.05;
+	ranksep=.05
+	node [shape=record,height=.1];
+
+	subgraph selection {
+		node [style=filled; fillcolor="yellow"]
+		sel; ressel
+	}
+
+	subgraph procedure {
+		node [style=filled; fillcolor="lightpink"]
+		mse; cv
+	}
+
+	subgraph param {
+		node [style=filled; fillcolor="lightgrey"]
+		knn
+	}
+
+	subgraph clustera{
+		label="autoencoder"
+		style=filled;
+		color=lavender;
+		subgraph cluster0 {
+			style="";
+			color=black;
+			label="encoder";
+			e0
+		}
+
+		subgraph cluster1 {
+			style="";
+			color=black;
+			label="embedding layer"
+			bot
+		}
+
+		subgraph cluster2 {
+			style="";
+			color=black;
+			label="decoder";
+			e2
+		}
+
+		subgraph cluster3 {
+			style="";
+			color=black;
+			label="decoded output";
+			out
+		}
+	}
+
+
+	subgraph cluster4 {
+		style=filled;
+		color=lightblue;
+		label="clustering";
+		d; knn; gene; gsea0; ksel; leiden
+	}
+
+
+
+	e0 [label="{{{<e00> n = 128 | <e10> n = 64} | {<e01> n = 128 | n = 64 | <e21> n = 32} | {<e02> n = 128 | n = 64 | n = 32 | <e32> n = 16} | {<e03> n = 128 | <e2> n = 64 | <e3> n = 32 | <e4> n = 16 | <e53> n = 8}}}"]
+	bot [label="<b0> n = 64 | <b1> n = 32 | <b2> n = 16 | <b3> n = 8 | <b4> n = 4 | <b5> n = 2"]
+	e2 [label="{{{<e00> n = 29 | <e10> n = 58} | {<e01> n = 14 | n = 29 | <e21> n = 58} | {<e02> n = 7 | n = 14 | n = 29 | <e32> n = 58} | {<e03> n = 4 | n = 8 | n = 14 | n = 29 | <e53> n = 58}}}"];
+	out [label="<o0> n = 114 | <o1> n = 114 | <o2> n = 114 | <o3> n = 114"]
+
+	subgraph clustereval {
+		style=filled;
+		color=lightblue;
+		label="cluster evaluation"
+		hyper
+	}
+
