@@ -100,6 +100,35 @@ As a further investigation, we produced similar plots for each of the model-head
 \subsubsection{Head knockout with multiple prompts}
 Finally, we took a selection of 64 prompts from the corpus and used the difference in probabilities (not logits) as a vector. Then we applied PCA dimensionality reduction to this and colored them according to the original clusters. The idea was to see whether clustering in the attention weights corresponds to clustering in the promoted/suppressed token space.
 
+\subsection{Dimension Reduction \& Clustering}
+
+\subsubsection{Dimension Reduction}
+
+An autoencoder is a method of dimension reduction that uses a neural network to find a lower dimensional encoding which can be decoded to recover the input. This reduces exaggeration of distance due to the number of parameters measured. We hypothesized that weights containing the most information would disproportionately contribute to the embedding.
+
+We generated embeddings of 64, 32, 16, 8, 4, and 2 dimensions and selected the most informative using Akaike Information Criterion, which is given by $$ AIC = 2k - 2ln(L)$$ where $k$ is number of parameters (embedding layers in this case) and $L$ is a loss function (MSE in this case).
+
+\begin{table}
+\begin{tabular}{|c|c|c|c|}
+	bottleneck & nlayer & err & aic \\
+	encode16 & 16 & 8 & 0.001563 & 44.92 \\
+	encode2 & 2 & 14 & 0.003355 & 15.39 \\
+	encode32 & 32 & 6 & 0.000819 & 78.21 \\
+	encode4 & 4 & 12 & 0.003071 & 19.57 \\
+	encode64 & 64 & 4 & 0.000230 & 144.75 \\
+	encode8 & 8 & 10 & 0.002481 & 27.99 \\
+\end{tabular}
+\caption{AIC for encodings.}
+\end{table}
+
+	\subsubsection{Clustering}
+			A 9-nearest neighbors graph is constructed from euclidean distance calculated from the encoding layer.
+
+
+			The leiden algorithm attempts to find a clustering that maximizes modularity $ H $ for a given graph and resolution $ \gamma $.  Modularity is defined as $$ H = \frac{1}{2m}\sum_{c}( \,e_c - \gamma\frac{K_c^2}{2m}) \, $$ where $m$ is the average degree of the graph, $e_c$ is the number of edges in cluster $c$, and $K_c$ is the number of nodes in cluster $c$. This gives a measure of how well-connected clusters compared to expectation based on average degree of the graph and number of nodes in a cluster. A higher $\gamma$ results in more clusters.
+
+			We obtained 1000 clusterings on random $\gamma$ values between 0.01 and 3. We assessed clustering by several metrics. To identify heads performing similar functions, we attempted optimise for there to be exactly one head from each model in each cluster. To select the resolution parameter, we calculated an F-score using the first head from each model in a cluster as true positives and each subsequent head from the same model as false positives.
+
 \section{Results}
 
 \begin{figure}
@@ -122,7 +151,7 @@ Finally, we took a selection of 64 prompts from the corpus and used the differen
 
 \begin{figure}
 	\includegraphics[width=\textwidth]{figs/optimization.pdf}
-	\caption{Optimization of \gamma selection.}
+	\caption{Optimization of $\gamma$ selection.}
 	\label{}
 \end{figure}
 
@@ -174,74 +203,7 @@ Finally, we took a selection of 64 prompts from the corpus and used the differen
 
 \section{Discussion}
 
-
-\label{sec:others}
-\lipsum[8] \cite{kour2014real,kour2014fast} and see \cite{hadash2018estimate}.
-
-The documentation for \verb+natbib+ may be found at
-\begin{center}
-  \url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
-\end{center}
-Of note is the command \verb+\citet+, which produces citations
-appropriate for use in inline text.  For example,
-\begin{verbatim}
-   \citet{hasselmo} investigated\dots
-\end{verbatim}
-produces
-\begin{quote}
-  Hasselmo, et al.\ (1995) investigated\dots
-\end{quote}
-
-\begin{center}
-  \url{https://www.ctan.org/pkg/booktabs}
-\end{center}
-
-
-\subsection{Figures}
-\lipsum[10] 
-See Figure \ref{fig:fig1}. Here is how you add footnotes. \footnote{Sample of the first footnote.}
-\lipsum[11] 
-
-\begin{figure}
-  \centering
-  \fbox{\rule[-.5cm]{4cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
-  \caption{Sample figure caption.}
-  \label{fig:fig1}
-\end{figure}
-
-\begin{figure} % picture
-    \centering
-    \includegraphics{test.png}
-\end{figure}
-
-\subsection{Tables}
-\lipsum[12]
-See awesome Table~\ref{tab:table}.
-
-\begin{table}
- \caption{Sample table title}
-  \centering
-  \begin{tabular}{lll}
-    \toprule
-    \multicolumn{2}{c}{Part}                   \\
-    \cmidrule(r){1-2}
-    Name     & Description     & Size ($\mu$m) \\
-    \midrule
-    Dendrite & Input terminal  & $\sim$100     \\
-    Axon     & Output terminal & $\sim$10      \\
-    Soma     & Cell body       & up to $10^6$  \\
-    \bottomrule
-  \end{tabular}
-  \label{tab:table}
-\end{table}
-
-\subsection{Lists}
-\begin{itemize}
-\item Lorem ipsum dolor sit amet
-\item consectetur adipiscing elit. 
-\item Aliquam dignissim blandit est, in dictum tortor gravida eget. In ac rutrum magna.
-\end{itemize}
-
+By comparing separately trained toy models of with the same architecture, we were able to perform functional analysis of attention heads in isolation. This 
 
 \bibliographystyle{unsrt}  
 %\bibliography{references}  %%% Remove comment to use the external .bib file (using bibtex).

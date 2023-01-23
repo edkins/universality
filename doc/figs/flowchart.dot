@@ -3,65 +3,50 @@ digraph cluster0 {
 	ranksep=.05
 	node [shape=record,height=.1];
 
-	subgraph selection {
-		node [style=filled; fillcolor="yellow"]
-		sel; ressel
+	subgraph nlp {
+		label="9 NLP models"
+		style=filled;
+		color=lavender;
+		subgraph h {
+			style="";
+			color=black;
+			label="attention heads";
+			heads
+		}
+		input; tokenizer; mlp; solu; output
 	}
-
-	subgraph procedure {
-		node [style=filled; fillcolor="lightpink"]
-		mse; cv
-	}
-
-	subgraph param {
-		node [style=filled; fillcolor="lightgrey"]
-		knn
-	}
-
-	subgraph clustera{
+		
+	subgraph autoencoder{
 		label="autoencoder"
 		style=filled;
 		color=lavender;
-		subgraph cluster0 {
-			style="";
-			color=black;
-			label="encoder";
-			e0
-		}
-
-		subgraph cluster1 {
-			style="";
-			color=black;
-			label="embedding layer"
-			bot
-		}
-
-		subgraph cluster2 {
-			style="";
-			color=black;
-			label="decoder";
-			e2
-		}
-
-		subgraph cluster3 {
-			style="";
-			color=black;
-			label="decoded output";
-			out
-		}
+		encoder; embedding; decoder; decoded
 	}
 
+	subgraph eval {
+		label="autoencoder validation"
+		mse; aic; modelsel
 
-	subgraph cluster4 {
+	subgraph clustering {
+		label="clustering"
 		style=filled;
-		color=lightblue;
-		label="clustering";
-		d; knn; gene; gsea0; ksel; leiden
+		color=lavender;
+		knn; leiden; clustsel
 	}
 
 
+	input [label="input tokens"]
+	tokenizer ["GPT2 tokenizer"]
+	heads [label="<h0> 16×16 | <h1> 16×16 | <h2> 16×16 | <h3> 16×16 | <h4> 16×16 | <h5> 16×16 | <h6> 16×16 | <h7> 16×16"]
+	mlp [label="2048 dimension MLP"]
+	solu [label="SOLU"]
+	output [label="output\nn = 256"]
 
-	e0 [label="{{{<e00> n = 128 | <e10> n = 64} | {<e01> n = 128 | n = 64 | <e21> n = 32} | {<e02> n = 128 | n = 64 | n = 32 | <e32> n = 16} | {<e03> n = 128 | <e2> n = 64 | <e3> n = 32 | <e4> n = 16 | <e53> n = 8}}}"]
+	pairs [label="token pair wieghts\nn = 256"]
+	encoder [label="encoder"]
+	embedding [label="embedding\n∈ \{ℝ²,ℝ⁴,ℝ⁸,ℝ¹⁶,ℝ³²,ℝ⁶⁴\}"]
+	decoder [label="decoder"]
+	out [label="output\nn = 256"]
 	bot [label="<b0> n = 64 | <b1> n = 32 | <b2> n = 16 | <b3> n = 8 | <b4> n = 4 | <b5> n = 2"]
 	e2 [label="{{{<e00> n = 29 | <e10> n = 58} | {<e01> n = 14 | n = 29 | <e21> n = 58} | {<e02> n = 7 | n = 14 | n = 29 | <e32> n = 58} | {<e03> n = 4 | n = 8 | n = 14 | n = 29 | <e53> n = 58}}}"];
 	out [label="<o0> n = 114 | <o1> n = 114 | <o2> n = 114 | <o3> n = 114"]
