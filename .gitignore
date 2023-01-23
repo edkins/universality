@@ -4,6 +4,7 @@ __pycache__/
 *.csv
 *.csv.gz
 !images/*.png
+!doc/images/*.png
 writeup.aux
 writeup.out
 writeup.log
