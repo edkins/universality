@@ -182,7 +182,7 @@ This effect is explored further in \ref{fig:attention-to-first-token}, where we 
     \label{fig:attending-to-first-token}
 \end{figure}
 
-\subsection Knocking out heads
+\subsection{Knocking out heads}
 
 For the first prompt that we investigated, and for the first head of the first model, the clearest result came after 6 tokens. The prompt was "They sit alone in their rooms", and \ref{fig:knockout-one-prompt} shows that words such as "are", "were" and "will" are suppressed by the given head. Grammatically, the words should not be there (or are very unlikely), and the model has not fully learned this. However, the given head is in a sense "helping" the others out here.
 
