@@ -139,36 +139,73 @@ Finally, we took a selection of 64 prompts from the corpus and used the differen
 \end{figure}
 
 \subsection{Giles Results}
+
+In \ref{fig:head-distance-matrix} we see, obviously, that each head is identical to itself (the diagonal). We see some heads that stand out as being generally different, but similar to each other (the horizontal and vertical yellow lines). These roughly correspond to heads that mostly have each token attending to itself. Some other heads are a little closer or further than average but none are identical in their behavior.
+
 \begin{figure}
     \includegraphics[width=\textwidth]{images/head-distance-matrix.png}
+    \caption{Pairwise euclidean distance between attention head embeddings, arranged in the original order.}
+    \label{fig:head-distance-matrix}
 \end{figure}
+
+In \ref{fig:umap-tsne-pca} we see the black dot (corresponding to attending to everything equally) is central to one of the clusters of heads. The two grey dots (dark grey corresponding to attending to the current token, and light grey corresponding to attending to the current and previous tokens) are less central but still fairly close to real head clusters.
 
 \begin{figure}
     \includegraphics[width=\textwidth]{images/umap-tsne-pca.png}
+    \caption{UMAP, TSNE, PCA dimension reductions of attention head embeddings together with artificial points in grey.}
+    \label{fig:umap-tsne-pca}
 \end{figure}
+
+In \ref{fig:pca-components} we see the first principal component has entries along each of the diagonals, corresponding to attending to the current token.
+
+The second principal component corresponds (roughly) to attendig to the previous token, although there are some wiggles.
+
+The remaining principal components exhibit different behaviour for each prompt, and warrant further investigation. The third principal component is shown in \ref{fig:pca-component-2}. This shows one sign for the first column (attending to the first token in the sequence) and the opposite sign for the remaining tokens. Furthermore, the sign is positive (red) for common "stop-words" such as "the", "of" and "and" and negative (blue) for more semantically meaningful words.
+
+This effect is explored further in \ref{fig:attention-to-first-token}, where we see how much each token attends to the first token, across all model-heads, but reduced to 2 dimensions with PCA. This shows a clear cluster of capitalized words up the top-right, and stop-words towards the lower-right of the main cluster.
 
 \begin{figure}
     \includegraphics[width=\textwidth]{images/pca-components.png}
+    \caption{PCA components of attention head embedding}
+    \label{fig:pca-components}
 \end{figure}
 
 \begin{figure}
     \includegraphics[width=\textwidth]{images/pca-component-2.png}
+    \caption{Third PCA component annotated with prompt tokens}
+    \label{fig:pca-component-2}
 \end{figure}
 
 \begin{figure}
     \includegraphics[width=\textwidth]{images/attending-to-first-token.png}
+    \caption{PCA dimension reduction of how much each token attends to the first token in the prompt}
+    \label{fig:attending-to-first-token}
+\end{figure}
+
+\subsection Knocking out heads
+
+For the first prompt that we investigated, and for the first head of the first model, the clearest result came after 6 tokens. The prompt was "They sit alone in their rooms", and \ref{fig:knockout-one-prompt} shows that words such as "are", "were" and "will" are suppressed by the given head. Grammatically, the words should not be there (or are very unlikely), and the model has not fully learned this. However, the given head is in a sense "helping" the others out here.
+
+In \ref{knockout-one-prompt-many-models} we extend this investigation to multiple models and heads - specifically everything in cluster 2. Some of the other models' heads seem to have a similar purpose, suppressing tokens such as "are" and "were". But not all of them.
+
+Figure \ref{knockout-64prompt} shows how this effect extends across multiple prompts and all clusters. We see the turquoise cluster scattered across the bottom, the green cluster over to the left, and the peach/pink/gold clusters (which were near each other in the original plot) mixed together nearby. This suggests that for some clusters, there is a relatedness that goes beyond just similar attention patterns - they also have similar effects on the output.
+
+\begin{figure}
+	\includegraphics[width=\textwidth]{images/knockout-one-prompt.png}
+	\caption{Scatterplot showing token logits emitted for the last token in the given prompt. X axis: original model. Y axis: model with head 1 knocked out.}
+	\label{fig:knockout-one-prompt}
 \end{figure}
 
 \begin{figure}
-    \includegraphics[width=\textwidth]{images/knockout-one-prompt.png}
+	\includegraphics[width=\textwidth]{images/knockout-one-prompt-many-models.png}
+	\caption{Scatterplot showing token logits emitted for the last token in the given prompt, for multiple models and heads in the same cluster. X axis: original model. Y axis: model with the given head knocked out.}
+	\label{fig:knockout-one-prompt-many-models}
 \end{figure}
 
 \begin{figure}
-    \includegraphics[width=\textwidth]{images/knockout-one-prompt-many-models.png}
-\end{figure}
-
-\begin{figure}
-    \includegraphics[width=\textwidth]{images/knockout-64prompt.png}
+	\includegraphics[width=\textwidth]{images/knockout-64prompt.png}
+	\caption{PCA dimesnion reduction of model-heads, colored according to original clustering and positioned according to differences in probabilities when the given head is knocked out.}
+	\label{fig:knockout-64prompt}
 \end{figure}
 
 
