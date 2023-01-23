@@ -21,11 +21,11 @@
 
 \author{
  Giles Edkins \\
-  Alignment Jam #4 \\
+  Alignment Jam \#4 \\
   \texttt{} \\
    \And
  Keira Wiechecki \\
-  Alignment Jam #4 \\
+  Alignment Jam \#4 \\
   Department of Biology \\
   New York University \\
   \texttt{kaw504@nyu.edu} \\
@@ -50,8 +50,98 @@ We trained 9 toy language models on [corpus]
 
 We extracted weights from each head from each model in response to 1024 prompts. We used an autoencoder to compress the weights for each token pair 
 
+\subsection{Giles Methods}
+\subsubsection{Model Architecture}
+
+9 models were trained. Each model was constructed using the **TransformerLens library. Each has the same architecture:
+\begin{itemize}
+	\item A single layer
+	\item 8 Heads
+	\item A context window of 16 tokens
+	\item A model dimensionality of 256
+	\item A head dimensionality of 64
+	\item An MLP dimensionality of 2048
+	\item A solu activation function
+	\item The tokenizer taken from GPT-2
+\end{itemize}
+
+\subsubsection{Training}
+Each model was trained for 4 epochs, with a sample of 30,000 datapoints (each 16 tokens long) taken from the **Brown corpus. An **AdamW optimizer was used, and a cross-entropy loss function.
+
+\subsubsection{Attention weight extraction}
+A sample of 1024 datapoints (each 16 tokens long) was taken from the Brown corpus. Each datapoint was fed through each model to calculate the logits, which were discarded - instead, we captured the attention pattern of each attention head. This was saved as a big CSV file.
+
+\subsubsection{Head-distance matrix}
+For each head of each model (72 total), we took all the attenion values and treated them as one long vector. Then we took the Euclidean distance between pairs of these vectors, to generate a 72x72 matrix.
+
+\subsubsection{UMAP, TSNE and PCA visualizations}
+We ran a 2-component Principal Component Analysis, UMAP and TSNE where the datapoints corresponded to the model-heads, and the features corresponded to attention weights on the different prompts. The projected components are shown, together with projections for 3 artificial points:
+
+\begin{itemize}
+	\item Each token only attending to itself
+	\item Each token attending to all previous tokens equally
+	\item Each token attending to itself and the previous token
+\end{itemize}
+
+\subsubsection{PCA components}
+We ran a Principal Component Analysis where the datapoints corresponded to the model-heads, and the features corresponded to attention weights on the different prompts. The first 5 principal components, and the first 8 prompts, are shown.
+
+\subsubsection{How much each token attends to the first token}
+As a follow-up, we plotted a PCA projection of the attentions of various words in various prompts, against the first word only.
+
+\subsubsection{Head knockout}
+Here, further information was gathered from the models. In particular, we used the TransformerLens hook feature to erase the output from one of the heads on the given model, to investigate the effect of that head on the output. This allows, for a given prompt, producing a scatterplot of each token: the x-axis is the original logit values from the model, and the y-axis shows the logits when the head is knocked out.
+
+The idea is that tokens above the diagonal are "suppressed" by the given head, and tokens below the diagonal are "promoted" by that head.
+
+As a further investigation, we produced similar plots for each of the model-heads in one of the clusters, to see if they promote/suppress similar tokens.
+
+\subsubsection{Head knockout with multiple prompts}
+Finally, we took a selection of 64 prompts from the corpus and used the difference in probabilities (not logits) as a vector. Then we applied PCA dimensionality reduction to this and colored them according to the original clusters. The idea was to see whether clustering in the attention weights corresponds to clustering in the promoted/suppressed token space.
+
+
 \section{Results}
 
+\subsection{Giles Results}
+\begin{figure}
+    \centering
+    \includegraphics{images/head-distance-matrix.png}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{images/umap-tsne-pca.png}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{images/pca-components.png}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{images/pca-component-2.png}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{images/attending-to-first-token.png}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{images/knockout-one-prompt.png}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{images/knockout-one-prompt-many-models.png}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics{images/knockout-64prompt.png}
+\end{figure}
 
 \section{Discussion}
 

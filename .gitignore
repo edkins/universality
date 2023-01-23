@@ -3,3 +3,9 @@ __pycache__/
 *.png
 *.csv
 *.csv.gz
+!images/*.png
+writeup.aux
+writeup.out
+writeup.log
+writeup.pdf
+arxiv.sty
